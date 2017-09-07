@@ -2,26 +2,35 @@ var PLAYER_ONE = 'red';
 var PLAYER_TWO = 'black';
 
 function startGame(){
+  clearBoard();
   document.currentPlayer = PLAYER_ONE;
+  document.terminateApp = false;
   updateGameStatus();
 }
 
 function fillCircle(circle){
-  if(!isCircleAlreadyFilled(circle)){
-    var selectedColumn = circle.id.charAt(3);
+  if(!document.terminateApp){
+    if(!isCircleAlreadyFilled(circle)){
+      var selectedColumn = circle.id.charAt(3);
 
-    for (var i = 5; i >= 0; i--) {
-      if(document.getElementById('r' + i + 'c' + selectedColumn).style.backgroundColor != PLAYER_ONE ||
-         document.getElementById('r' + i + 'c' + selectedColumn).style.backgroundColor != PLAYER_TWO){
-           if(!isCircleAlreadyFilled(document.getElementById('r' + i + 'c' + selectedColumn))){
-             document.getElementById('r' + i + 'c' + selectedColumn).style.backgroundColor = document.currentPlayer;
-             checkForWinner();
-             switchPlayer();
-             break;
-           }
+      for (var i = 5; i >= 0; i--) {
+        if(document.getElementById('r' + i + 'c' + selectedColumn).style.backgroundColor != PLAYER_ONE ||
+           document.getElementById('r' + i + 'c' + selectedColumn).style.backgroundColor != PLAYER_TWO){
+             if(!isCircleAlreadyFilled(document.getElementById('r' + i + 'c' + selectedColumn))){
+               document.getElementById('r' + i + 'c' + selectedColumn).style.backgroundColor = document.currentPlayer;
+               if(checkForWinner()){
+                 document.terminateApp = true;
+                 document.getElementById('game_status').innerText = 'Game over, ' + document.currentPlayer + ' wins.';
+               } else {
+                 switchPlayer();
+               }
+               break;
+             }
+        }
       }
     }
   }
+
 }
 
 function switchPlayer(){
@@ -74,7 +83,7 @@ function checkForWinner(){
       if(document.getElementById('r' + i + 'c' + j).style.backgroundColor == document.currentPlayer){
         horizontalWinner++;
         if(horizontalWinner == 4){
-          console.log('we have a horiz winner');
+          return true;
         }
       } else {
         horizontalWinner = 0;
@@ -90,7 +99,7 @@ function checkForWinner(){
       if(document.getElementById('r' + j + 'c' + i).style.backgroundColor == document.currentPlayer){
         verticalWinner++;
         if(verticalWinner == 4){
-          console.log('we have a vert winner');
+          return true;
         }
       } else{
         verticalWinner = 0;
@@ -104,7 +113,14 @@ function checkForWinner(){
   for(var j = 0; j < 3; j++){
     for (var i = 0; i < 6; i++) {
       if(document.getElementById('r' + (i+j) + 'c' + i) != null){
-
+        if(document.getElementById('r' + (i+j) + 'c' + i).style.backgroundColor == document.currentPlayer){
+          diagnolWinner++;
+          if(diagnolWinner == 4){
+            return true;
+          }
+        }  else{
+          diagnolWinner = 0;
+        }
       }
     }
   }
@@ -113,15 +129,31 @@ function checkForWinner(){
   for(var j = 0; j < 4; j++){
     for (var i = 0; i < 6; i++) {
       if(document.getElementById('r' + i + 'c' + (i+j)) != null){
-
+        if(document.getElementById('r' + i + 'c' + (i+j)).style.backgroundColor == document.currentPlayer){
+        diagnolWinner++;
+        if(diagnolWinner == 4){
+          return true;
+        }
+      } else {
+        diagnolWinner = 0;
       }
     }
   }
+}
 
 for(var row = 0; row < 3; row++){
   var tempRow = row;
   for(var column = 6; column >= 0; column--){
-    //console.log(document.getElementById('r' + row++ + 'c' + column))
+    if(column != 0 && row <= 5){
+      if(document.getElementById('r' + row++ + 'c' + column).style.backgroundColor == document.currentPlayer){
+        diagnolWinner++;
+        if(diagnolWinner == 4){
+          return true;
+        }
+      } else {
+        diagnolWinner = 0;
+      }
+    }
   }
   row = tempRow;
 }
@@ -132,9 +164,15 @@ var counter = 0;
 for(var row = 0; row < 3; row++){
   row = 0;
   for(var column = 5; column >= 0; column --){
-
     if((column - counter) >= 0){
-      console.log(document.getElementById('r' + row++ + 'c' + (column - counter)))
+      if(document.getElementById('r' + row++ + 'c' + (column - counter)).style.backgroundColor == document.currentPlayer){
+        diagnolWinner++;
+        if(diagnolWinner == 4){
+          return true;
+        }
+      } else {
+        diagnolWinner = 0;
+      }
     }
   }
   row = 0;
@@ -143,5 +181,14 @@ for(var row = 0; row < 3; row++){
     break;
   }
 }
+return false;
+}
 
+function clearBoard(){
+  for(var row = 0; row < 6; row++){
+    for(var column = 0; column < 7; column++){
+      document.getElementById('r' + row + 'c' + column).style.backgroundColor = "";
+
+    }
+  }
 }

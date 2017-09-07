@@ -1,5 +1,5 @@
 var PLAYER_ONE = 'red';
-var PLAYER_TWO = 'blue';
+var PLAYER_TWO = 'black';
 
 function startGame(){
   document.currentPlayer = PLAYER_ONE;
@@ -8,9 +8,19 @@ function startGame(){
 
 function fillCircle(circle){
   if(!isCircleAlreadyFilled(circle)){
-    circle.style.backgroundColor = document.currentPlayer;
-    checkForWinner();
-    switchPlayer();
+    var selectedColumn = circle.id.charAt(3);
+
+    for (var i = 5; i >= 0; i--) {
+      if(document.getElementById('r' + i + 'c' + selectedColumn).style.backgroundColor != PLAYER_ONE ||
+         document.getElementById('r' + i + 'c' + selectedColumn).style.backgroundColor != PLAYER_TWO){
+           if(!isCircleAlreadyFilled(document.getElementById('r' + i + 'c' + selectedColumn))){
+             document.getElementById('r' + i + 'c' + selectedColumn).style.backgroundColor = document.currentPlayer;
+             checkForWinner();
+             switchPlayer();
+             break;
+           }
+      }
+    }
   }
 }
 
@@ -26,6 +36,7 @@ function switchPlayer(){
 function isCircleAlreadyFilled(circle){
   if(circle.style.backgroundColor == PLAYER_ONE ||
      circle.style.backgroundColor == PLAYER_TWO){
+       updateGameStatus();
        return true;
      } else{
        return false;
@@ -39,6 +50,8 @@ function updateGameStatus(){
   } else if(arguments.callee.caller.toString().includes("switchPlayer")){
     document.getElementById('game_status').innerText = 'It\'s ' +
     capitalizeFirstLetter(document.currentPlayer) + '\'s turn.';
+  } else if (arguments.callee.caller.toString().includes("isCircleAlreadyFilled")){
+    document.getElementById('game_status').innerText = 'That spot is already taken, try again.';
   }
 }
 
@@ -51,10 +64,10 @@ function checkForWinner(){
  var verticalWinner = 0;
  var diagnolWinner = 0;
 
-  for(i = 0; i < 6; i++){
+  for(i = 5; i >= 0; i++){
     for(j = 0; j < 7; j++){
-    }
 
+    }
   }
 
 }
